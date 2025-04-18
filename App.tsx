@@ -1,130 +1,99 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { StyleSheet, View, Text, Button, TextInput, Alert, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import PlayersList from './components/Players_List';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const sendCommand = async (command: string) => {
+  try {
+    const response = await fetch('http://192.168.1.180:3000/send-command', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ command }),
+    });
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+    const data = await response.json();
+    Alert.alert('Réponse du serveur Minecraft', data.message);
+  } catch (error) {
+    console.error('Erreur lors de l’envoi de la commande :', error);
+  }
+};
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+const startServeur = async () => {
+  try {
+    const response = await fetch("http://192.168.1.180:3000/start", {
+      method: "POST"
+    });
+    const data = await response.json();
+    Alert.alert('Démarrage du serveur', data.message);
+  } catch (error) {
+    console.error("Impossible de démarrer le serveur :", error);
+  }
+};
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  /*
-   * To keep the template simple and small we're adding padding to prevent view
-   * from rendering under the System UI.
-   * For bigger apps the recommendation is to use `react-native-safe-area-context`:
-   * https://github.com/AppAndFlow/react-native-safe-area-context
-   *
-   * You can read more about it here:
-   * https://github.com/react-native-community/discussions-and-proposals/discussions/827
-   */
-  const safePadding = '5%';
+  const [command, setCommand] = useState<string>("");
 
   return (
-    <View style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        style={backgroundStyle}>
-        <View style={{paddingRight: safePadding}}>
-          <Header/>
+    <View style={styles.container}>
+      <Text style={styles.header}>🟩 Panneau de contrôle Minecraft</Text>
+      <ScrollView style={styles.content}>
+
+        <PlayersList />
+
+        <Text style={styles.label}>Envoyer une commande RCON :</Text>
+        <TextInput
+          style={styles.input}
+          value={command}
+          onChangeText={setCommand}
+          placeholder="Ex: say Bonjour à tous !"
+          placeholderTextColor="#ccc"
+        />
+        <View style={styles.button}>
+          <Button title="Envoyer la commande" onPress={() => sendCommand(command)} />
         </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            paddingHorizontal: safePadding,
-            paddingBottom: safePadding,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
+
+        <View style={styles.button}>
+          <Button title="Démarrer le serveur" color="#4CAF50" onPress={startServeur} />
         </View>
+
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    backgroundColor: "#1e1e1e",
+    flex: 1,
+    paddingTop: 50,
   },
-  sectionTitle: {
+  content: {
+    paddingHorizontal: 20,
+  },
+  header: {
+    color: "#00FF00",
     fontSize: 24,
-    fontWeight: '600',
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 20,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  label: {
+    color: "#fff",
+    marginTop: 20,
+    marginBottom: 5,
+    fontSize: 16,
   },
-  highlight: {
-    fontWeight: '700',
+  input: {
+    backgroundColor: "#2c2c2c",
+    color: "#fff",
+    padding: 10,
+    borderRadius: 6,
+    borderColor: "#444",
+    borderWidth: 1,
+  },
+  button: {
+    marginTop: 15,
   },
 });
 

@@ -8,7 +8,7 @@ L’application permet :
 - d’exécuter des commandes administrateur sur le serveur,
 - de démarrer le serveur à distance.
 
-L’API écoute sur différentes routes HTTP détaillées ci-dessous :
+L’API écoute sur différentes routes HTTP (192.168.1.180) détaillées ci-dessous :
 
 - `POST /start` : démarre le serveur Minecraft (exécution d’un script ou d’une commande côté serveur).
 - `POST /send-command` : exécute une commande envoyée par le client via RCON.

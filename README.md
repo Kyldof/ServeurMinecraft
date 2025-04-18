@@ -49,4 +49,4 @@ L’interface utilise un **style sombre (dark mode)** pour une meilleure lisibil
 - Authentification pour restreindre l'accès à l'application
 - Affichage des logs du serveur en temps réel
 - Interface de configuration du serveur
-- Amélioration de la gestion des erreurs
+- ajouter un button stop afin de stoper le serveur
